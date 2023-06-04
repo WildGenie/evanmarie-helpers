@@ -95,7 +95,7 @@ def div_print(text, width='auto', bgcolor=bgcolor, text_color=text_color,
 
     if width == 'auto':
         font_calc = {6: 2.75, 5: 2.5, 4: 2.5, 3: 3, 2: 4}
-        width = str(len(text) * fontsize * font_calc[fontsize]) + "px"
+        width = f"{str(len(text) * fontsize * font_calc[fontsize])}px"
 
     else:
         if type(width) != str:
@@ -193,9 +193,7 @@ def table_of_contents(title='', head1=None, head2=None, col1=[], col2=[]):
     link_string = link_string.replace("[", "")
     link_string = link_string.replace("]", "")
     link_string = link_string.replace(',', " | ")
-    link_string = link_string.replace('"', "")
-
-    return (link_string)
+    return link_string.replace('"', "")
 
 
 # .......................LINK_MENU........................................ #
@@ -209,7 +207,7 @@ def link_menu(links_list, title=None, links_per_row=5):
     link_string = "---  \n<font size=5> " + title + "</font>  \n"
     tags_data = ""
 
-    for link_item in range(count):
+    for _ in range(count):
         if current > count:
             break
         if (current + 1) % links_per_row == 0:
@@ -278,15 +276,8 @@ def head_tail_horz(df, num, title, bgcolor=bgcolor,
 def sample_df(data, num, title, width="auto",
               bgcolor=bgcolor, text_color=text_color
               ):
-    if bgcolor != None:
-        bgcolor = bgcolor
-    else:
-        bgcolor = def_bgcolor
-    if text_color != None:
-        text_color = text_color
-    else:
-        text_color = def_text_color
-
+    bgcolor = bgcolor if bgcolor != None else def_bgcolor
+    text_color = text_color if text_color != None else def_text_color
     df = data.sample(num)
     df = "<center>" + df.to_html()
     div_print(f'{title} ({num} random samples)', fontsize=3, width=width,
@@ -335,12 +326,8 @@ def date_only(data, intraday=False):
     if intraday == False:
         if data.index.dtype == 'datetime64[ns]':
             data.index = data.index.strftime('%Y-%m-%d')
-            # data.index = data.index.date
-            return data
-        else:
-            return data
-    else:
-        return data
+    # data.index = data.index.date
+    return data
 
 
 def force_df(data, intraday=False):
@@ -420,8 +407,8 @@ def list_to_table(display_list, num_cols, title, width="auto",
     length = len(display_list)
     num_rows = round(length / num_cols) + 1
 
-    for h in range(num_rows):
-        for i in range(num_cols):
+    for _ in range(num_rows):
+        for _ in range(num_cols):
             try:
                 current += ('<td>' + display_list[count] + '</td>')
             except IndexError:
@@ -441,7 +428,7 @@ def overview(df, title=None, bgcolor=bgcolor, text_color=text_color):
     num_cols = df.shape[1]
     columns = list(df.columns)
     total_na = df.isna().sum().sum()
-    columns = str(', '.join(list(df.columns)))
+    columns = ', '.join(list(df.columns))
 
     overview_table = '<center><table>\
             <tr><td><font size=3><b>Columns Labels</b></font></td><td>{}</td></tr>\
@@ -474,8 +461,13 @@ def missing_values(df, bgcolor=bgcolor, text_color=text_color):
         missing_values = df[column].isna().sum()
         missing_log.append([column, missing_values])
     missing = pd.DataFrame(missing_log, columns=['column name', 'missing'])
-    div_print(f'Columns and Missing Values', fontsize=3, width="38%",
-              bgcolor=bgcolor, text_color=text_color)
+    div_print(
+        'Columns and Missing Values',
+        fontsize=3,
+        width="38%",
+        bgcolor=bgcolor,
+        text_color=text_color,
+    )
     missing = "<center>" + missing.to_html()
     display(HTML(missing))
 

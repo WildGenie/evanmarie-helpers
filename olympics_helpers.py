@@ -40,15 +40,8 @@ def display_me(df, num, title, bgcolor= bgcolor, text_color=text_color):
 def sample_df(data, num, title, width="auto",
               bgcolor= bgcolor, text_color=text_color):
     
-    if bgcolor != None:
-        bgcolor = bgcolor
-    else:
-        bgcolor = def_bgcolor
-    if text_color != None:
-        text_color = text_color
-    else:
-        text_color = def_text_color
-        
+    bgcolor = bgcolor if bgcolor != None else def_bgcolor
+    text_color = text_color if text_color != None else def_text_color
     df = data.sample(num)
     df = "<center>" + df.to_html()
     div_print(f'{title.upper()} ({num} random samples)', fontsize = 3, width=width,
@@ -79,14 +72,14 @@ def list_to_table(display_list, num_cols, title, width = "auto",
         
     div_print(f"{title.upper()}", fontsize = 4, width=width,
              bgcolor=bgcolor, text_color=text_color)
-    
+
     count = 0
     current = '<center><table><tr>'
     length = len(display_list)
     num_rows = round(length / num_cols) + 1
 
-    for h in range(num_rows):
-        for i in range(num_cols):
+    for _ in range(num_rows):
+        for _ in range(num_cols):
             try:
                 current += ('<td>' + display_list[count] + '</td>')
             except IndexError:
@@ -115,23 +108,23 @@ def div_print(text, width='auto',  bgcolor=bgcolor, text_color=text_color,
 
 def overview(df, title=None,  bgcolor=bgcolor, text_color=text_color):
     from IPython.display import HTML
-        
+
     num_rows = df.shape[0]
     num_cols = df.shape[1]
     columns = list(df.columns)
     total_na = df.isna().sum().sum()
-    columns = str(', '.join(list(df.columns)))
-    
+    columns = ', '.join(list(df.columns))
+
     overview_table = '<center><table>\
             <tr><td><font size=3><b>Columns Labels</b></font></td><td>{}</td></tr>\
             <tr><td><font size=3><b>Missing Values </b></font></td><td>{:,}</td></tr>\
             <tr><td><font size=3><b>Total Rows </b></font></td><td>{:,}</td></tr>\
             <tr><td><font size=3><b>Total Columns </b></font></td><td>{}</td></tr>\
             </table></center>'
-    
+
     categorical_table = "<center>" + df.describe(include="O").to_html()
     numerical_table = "<center>" + df.describe().to_html()
-    
+
     div_print(f'{title.upper()}: Dataframe Overview', fontsize=4, 
               bgcolor=bgcolor, text_color=text_color)
     display(HTML(overview_table.format(columns, total_na, num_rows, num_cols)))
@@ -148,14 +141,19 @@ def overview(df, title=None,  bgcolor=bgcolor, text_color=text_color):
     
 def missing_values(df,  bgcolor=bgcolor, text_color=text_color):
     from IPython.display import HTML
-    pd.options.display.float_format = '{:,.0f}'.format   
+    pd.options.display.float_format = '{:,.0f}'.format
     missing_log = []
     for column in df.columns:
         missing_values = df[column].isna().sum()
         missing_log.append([column, missing_values])
     missing = pd.DataFrame(missing_log, columns = ['column name', 'missing'])
-    div_print(f'Columns and Missing Values', fontsize=3, width="38%",
-             bgcolor=bgcolor, text_color=text_color)
+    div_print(
+        'Columns and Missing Values',
+        fontsize=3,
+        width="38%",
+        bgcolor=bgcolor,
+        text_color=text_color,
+    )
     missing = "<center>" + missing.to_html()
     display(HTML(missing))
     
